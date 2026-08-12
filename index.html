@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collin Stockmoe — Portfolio</title>
+<style>
+
+  /* ============================================
+     FONT
+     Monument Grotesk Mono is a licensed font and is
+     NOT loaded from a CDN. Drop the woff2 files next
+     to this index.html and they'll be picked up
+     automatically. Until the files are added, this
+     falls back to a comparable system mono.
+
+     TYPE HIERARCHY (site-wide):
+       - Titles (Collin Stockmoe, project headings) -> Bold, largest
+       - Navigation / subheaders (nav links, section
+         labels, page headings)                     -> Regular, dark
+       - Body copy (descriptions, blurbs, paragraphs) -> Light, gray
+     ============================================ */
+  @font-face {
+    font-family: 'Monument Grotesk Mono';
+    src: url('MonumentGroteskMono-Thin.woff2') format('woff2');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Monument Grotesk Mono';
+    src: url('MonumentGroteskMono-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Monument Grotesk Mono';
+    src: url('MonumentGroteskMono-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Monument Grotesk Mono';
+    src: url('MonumentGroteskMono-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Monument Grotesk Mono';
+    src: url('MonumentGroteskMono-Italic.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  :root{
+    --mono: 'Monument Grotesk Mono', ui-monospace, 'SF Mono', 'JetBrains Mono', 'Roboto Mono', Consolas, Menlo, monospace;
+    --w-thin: 100;
+    --w-light: 300;
+    --w-regular: 400;
+    --w-bold: 700;
+    --black: #111111;
+    --line: #111111;
+    --gray: #8a8a8a;
+    --paper: #ffffff;
+    --col-left: 320px;
+    --col-right: 300px;
+    --gutter: 28px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--black);
+    font-family: var(--mono);
+    height: 100%;
+    overflow: hidden; /* the columns scroll independently, not the page */
+  }
+
+  body{
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: var(--w-light);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a{
+    color: var(--black);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: var(--w-light);
+  }
+  a:hover{ color: var(--gray); }
+
+  strong, b{ font-weight: var(--w-bold); }
+
+  /* ============================================
+     INNER PAGES: 3-column grid
+     (left = identity/nav, center = routed content,
+     right = about + contact — same on every page)
+     ============================================ */
+  .wrap{
+    display: none;
+    grid-template-columns: var(--col-left) 1px 1fr 1px var(--col-right);
+    height: 100vh;
+  }
+  body:not(.is-home) .wrap{ display: grid; }
+
+  .rule-v{
+    background: var(--line);
+    width: 1px;
+    height: 100vh;
+  }
+
+  .scroll-col{
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+  }
+  .scroll-col::-webkit-scrollbar{ width: 6px; }
+  .scroll-col::-webkit-scrollbar-thumb{ background: #dcdcdc; }
+  .scroll-col::-webkit-scrollbar-track{ background: transparent; }
+
+  /* ---------- LEFT (INNER PAGES): IDENTITY + NAV ---------- */
+  .bio{
+    padding: var(--gutter);
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .name{
+    font-size: clamp(26px, 3vw, 36px);
+    font-weight: var(--w-bold);
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    line-height: 1.05;
+    margin: 0 0 22px 0;
+    word-break: break-word;
+  }
+
+  .headshot{
+    width: 100%;
+    aspect-ratio: 648 / 710;
+    object-fit: cover;
+    filter: grayscale(100%);
+    display: block;
+    border: 1px solid var(--line);
+  }
+
+  .hr{
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 20px 0;
+  }
+
+  .contact-block a.email{
+    display: block;
+    text-decoration: none;
+    color: var(--gray);
+    margin-bottom: 10px;
+  }
+  .contact-block a.email:hover{ color: var(--black); }
+  .contact-block a.social{
+    display: block;
+    margin-bottom: 4px;
+    text-decoration: none;
+    color: var(--black);
+    font-weight: var(--w-regular);
+  }
+  .contact-block a.social:hover{ color: var(--gray); }
+
+  nav.sitenav{
+    margin-top: 26px;
+  }
+  nav.sitenav a{
+    display: block;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: var(--w-regular);
+    color: var(--black);
+    margin-bottom: 20px;
+    letter-spacing: 0.01em;
+  }
+  nav.sitenav a:hover{ color: var(--gray); }
+  nav.sitenav a.current{
+    color: var(--gray);
+  }
+
+  h2.label{
+    font-size: 11px;
+    font-weight: var(--w-regular);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--black);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    margin: 0 0 10px 0;
+  }
+
+  /* ---------- CENTER (INNER PAGES): ROUTED CONTENT ---------- */
+  .feed{
+    padding: var(--gutter);
+    min-height: 100%;
+  }
+
+  .page-label{
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 11px;
+    font-weight: var(--w-regular);
+    color: var(--black);
+    margin: 0 0 26px 0;
+  }
+
+  /* -- projects feed: one project at a time, large format -- */
+  .feed-project{
+    margin-bottom: 64px;
+  }
+  .feed-project .strip{
+    width: 100%;
+    display: block;
+    border: 1px solid var(--line);
+    margin-bottom: 20px;
+    cursor: pointer;
+    background: #f4f4f4;
+  }
+  .feed-project .strip img{
+    width: 100%;
+    display: block;
+    filter: grayscale(15%);
+    transition: filter .2s ease;
+  }
+  .feed-project .strip:hover img{ filter: grayscale(0%); }
+  .feed-project .strip.no-image{
+    aspect-ratio: 16 / 7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .feed-project .meta-row{
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 40px;
+  }
+  .feed-project h3{
+    font-size: 30px;
+    font-weight: var(--w-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    margin: 0 0 6px 0;
+  }
+  .feed-project .year{
+    font-size: 12px;
+    color: var(--gray);
+    font-weight: var(--w-light);
+  }
+  .feed-project .desc p{
+    margin: 0 0 16px 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--gray);
+    font-weight: var(--w-light);
+  }
+  .feed-project .view-link{
+    font-size: 13px;
+    font-weight: var(--w-regular);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--black);
+    font-family: var(--mono);
+  }
+  .feed-project .view-link:hover{ color: var(--gray); }
+
+  @media (max-width: 760px){
+    .feed-project .meta-row{ grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* -- secondary projects list (business & marketing) -- */
+  .index-category{
+    margin-top: 12px;
+    margin-bottom: 40px;
+  }
+  .index-category .cat-label{
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--black);
+    font-weight: var(--w-regular);
+    margin-bottom: 14px;
+  }
+  .index-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 20px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eaeaea;
+    cursor: pointer;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    width: 100%;
+    text-align: left;
+    font-family: var(--mono);
+  }
+  .index-item .idx-title{
+    font-size: 16px;
+    font-weight: var(--w-light);
+    color: var(--black);
+  }
+  .index-item:hover .idx-title{ color: var(--gray); text-decoration: underline; }
+  .index-item .idx-year{
+    font-size: 12px;
+    color: var(--gray);
+    white-space: nowrap;
+  }
+
+  /* -- resume page -- */
+  .resume-block{ margin-bottom: 30px; }
+  .resume-block .entry{
+    margin-bottom: 18px;
+  }
+  .resume-block .org{
+    font-style: italic;
+    font-weight: var(--w-regular);
+    color: var(--black);
+    display: block;
+  }
+  .resume-block .sub{ display: block; color: var(--gray); font-size: 12px; margin-bottom: 6px; }
+  .resume-block ul{
+    margin: 6px 0 0 0;
+    padding-left: 16px;
+  }
+  .resume-block li{
+    margin-bottom: 4px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray);
+    font-weight: var(--w-light);
+  }
+
+  /* -- about page / contact page -- */
+  .prose{ max-width: 62ch; }
+  .prose p{
+    margin: 0 0 18px 0;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray);
+    font-weight: var(--w-light);
+  }
+
+  .contact-page a{
+    display: block;
+    font-size: 20px;
+    font-weight: var(--w-regular);
+    color: var(--black);
+    margin-bottom: 14px;
+    text-decoration: none;
+  }
+  .contact-page a:hover{ color: var(--gray); }
+
+  /* ---------- RIGHT (ALL PAGES): ABOUT (brief) + CONTACT ---------- */
+  .rightcol{
+    padding: var(--gutter);
+    min-height: 100%;
+  }
+  .rightcol .about-brief{
+    margin-bottom: 30px;
+  }
+  .rightcol .about-brief p{
+    font-size: 12.5px;
+    line-height: 1.6;
+    margin: 0;
+    color: var(--gray);
+    font-weight: var(--w-light);
+    text-transform: lowercase;
+  }
+
+  /* ============================================
+     HOME PAGE: single left-anchored column —
+     photo, name, description, directory.
+     No left/right split; rest of the viewport
+     is left as open space.
+     ============================================ */
+  .home-page{
+    display: none;
+    height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  body.is-home .home-page{ display: flex; align-items: center; }
+
+  .home-block{
+    padding: var(--gutter);
+    max-width: 380px;
+    width: 100%;
+  }
+
+  .home-block .home-photo{
+    width: 100%;
+    max-width: 260px;
+    aspect-ratio: 648 / 710;
+    object-fit: cover;
+    filter: grayscale(100%);
+    display: block;
+    border: 1px solid var(--line);
+    margin-bottom: 10px;
+  }
+  .home-block .home-caption{
+    font-size: 11px;
+    color: var(--gray);
+    font-weight: var(--w-light);
+    margin: 0 0 36px 0;
+  }
+
+  .home-block .home-name{
+    font-size: clamp(30px, 3.6vw, 42px);
+    font-weight: var(--w-bold);
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    line-height: 1.05;
+    margin: 0 0 14px 0;
+  }
+  .home-block .home-tagline{
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray);
+    font-weight: var(--w-light);
+    text-transform: lowercase;
+    margin: 0 0 40px 0;
+    max-width: 40ch;
+  }
+
+  nav.home-nav{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  nav.home-nav a{
+    font-size: 18px;
+    font-weight: var(--w-regular);
+    color: var(--black);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    width: fit-content;
+  }
+  nav.home-nav a:hover{
+    color: var(--gray);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* ---------- PDF MODAL ---------- */
+  .pdf-modal{
+    position: fixed;
+    inset: 0;
+    background: rgba(17,17,17,0.94);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 28px;
+  }
+  .pdf-modal.open{ display: flex; }
+  .pdf-modal-inner{
+    width: 100%;
+    height: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .pdf-modal-bar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #eee;
+    font-size: 13px;
+  }
+  .pdf-modal-bar .pm-title{ font-style: italic; }
+  .pdf-close{
+    background: none;
+    border: 1px solid #555;
+    color: #eee;
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 6px 14px;
+    cursor: pointer;
+  }
+  .pdf-close:hover{ border-color: #fff; color: #fff; }
+  .pdf-modal-inner iframe{
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: #525659;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1080px){
+    html, body{ overflow: auto; height: auto; }
+    body:not(.is-home) .wrap{
+      grid-template-columns: 1fr;
+      height: auto;
+    }
+    .rule-v{
+      width: 100%;
+      height: 1px;
+    }
+    .scroll-col{
+      height: auto;
+      overflow: visible;
+    }
+    .headshot{
+      max-width: 340px;
+    }
+    .home-page{
+      height: auto;
+      overflow: visible;
+    }
+    body.is-home .home-page{
+      align-items: flex-start;
+      padding-top: 40px;
+    }
+    .feed-project .meta-row{
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px){
+    :root{ --gutter: 18px; }
+    body{ font-size: 12.5px; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- HOME: single left-anchored block (photo, name, description, directory) -->
+<div class="home-page" id="homePage">
+  <div class="home-block" id="homeBlock"></div>
+</div>
+
+<!-- INNER PAGES: identity/nav (left) + routed content (center) + about/contact (right) -->
+<div class="wrap" id="wrap">
+  <aside class="scroll-col" id="leftcol"></aside>
+  <div class="rule-v"></div>
+  <main class="scroll-col" id="center-content"></main>
+  <div class="rule-v"></div>
+  <aside class="rightcol scroll-col" id="rightcol"></aside>
+</div>
+
+<!-- PDF VIEWER MODAL -->
+<div class="pdf-modal" id="pdfModal">
+  <div class="pdf-modal-inner">
+    <div class="pdf-modal-bar">
+      <span class="pm-title" id="pmTitle"></span>
+      <button class="pdf-close" id="pdfClose">&times; close</button>
+    </div>
+    <iframe id="pdfFrame" src=""></iframe>
+  </div>
+</div>
+
+<script>
+  // ---- project data (display order = Saddles, Dress Trousers, Modern Americana, Universal Design) ----
+  const PROJECTS = [
+    {
+      id: 'saddles',
+      title: 'Saddles — Big &amp; Tall Shacket',
+      year: '2025',
+      category: 'Product Development',
+      blurb: 'Technical design, grading, and marker-making for a patchwork canvas shacket, built as a complete Men\u2019s Big &amp; Tall (XL to 5XL) size run.',
+      cover: 'assets/saddles-preview.png',
+      pdf: 'projects/saddles.pdf'
+    },
+    {
+      id: 'dress-trousers',
+      title: 'Dress Trousers',
+      year: '2025',
+      category: 'Product Development',
+      blurb: 'A fully handmade pair of dress trousers, drafted over three fit iterations to refine rise, seat drape, and waist suppression.',
+      cover: 'assets/dress-trousers-preview.png',
+      pdf: 'projects/dress-trousers.pdf'
+    },
+    {
+      id: 'modern-americana',
+      title: 'Modern Americana',
+      year: '2025',
+      category: 'Computer Aided Design',
+      blurb: 'A digitally developed menswear capsule rooted in Westernwear tradition, carried from mood board through Gerber AccuMark patterns and CLO3D virtual fitting.',
+      cover: null,
+      pdf: 'projects/modern-americana.pdf'
+    },
+    {
+      id: 'universal-design',
+      title: 'Universal Design Trousers',
+      year: '2025',
+      category: 'Product Development',
+      blurb: 'A trouser patterned around NC State\u2019s Principles of Universal Design, with an adjustable back belt tab built in for a more accommodating fit.',
+      cover: null,
+      pdf: 'projects/universal-design.pdf'
+    },
+    {
+      id: 'allen-edmonds',
+      title: 'Allen Edmonds — Gen-X Brand Analysis',
+      year: '2025',
+      category: 'Marketing',
+      blurb: 'A brand and SWOT analysis exploring how Allen Edmonds can deepen relevance with Generation X through personalization, retail experience, and strategic partnerships.',
+      cover: null,
+      pdf: 'projects/allen-edmonds.pdf'
+    }
+  ];
+
+  // ---- PDF modal ----
+  const pdfModal = document.getElementById('pdfModal');
+  const pdfFrame = document.getElementById('pdfFrame');
+  const pmTitle = document.getElementById('pmTitle');
+
+  function openProject(id){
+    const p = PROJECTS.find(x => x.id === id);
+    if(!p) return;
+    pmTitle.textContent = p.title.replace(/&amp;/g, '&');
+    pdfFrame.src = p.pdf;
+    pdfModal.classList.add('open');
+  }
+  function closeProject(){
+    pdfModal.classList.remove('open');
+    pdfFrame.src = '';
+  }
+  document.getElementById('pdfClose').addEventListener('click', closeProject);
+  pdfModal.addEventListener('click', (e) => { if(e.target === pdfModal) closeProject(); });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && pdfModal.classList.contains('open')) closeProject();
+  });
+
+  // ---- shared nav link data (no special styling on "contact" — it matches the rest) ----
+  const NAV_LINKS = [
+    { route: '', label: 'home' },
+    { route: 'projects', label: 'projects' },
+    { route: 'about', label: 'about' },
+    { route: 'resume', label: 'resume' },
+    { route: 'contact', label: 'contact' }
+  ];
+
+  const homePage = document.getElementById('homePage');
+  const homeBlock = document.getElementById('homeBlock');
+  const wrap = document.getElementById('wrap');
+  const leftcol = document.getElementById('leftcol');
+  const center = document.getElementById('center-content');
+  const rightcol = document.getElementById('rightcol');
+
+  // ---- RIGHT COLUMN (inner pages only): About (brief) + Contact ----
+  function renderRight(){
+    rightcol.innerHTML = `
+      <div class="about-brief">
+        <h2 class="label">About</h2>
+        <p>junior at north carolina state university studying fashion &amp; textile management. focused on garment construction, pattern development, and technical design.</p>
+      </div>
+      <hr class="hr">
+      <div>
+        <h2 class="label">Contact</h2>
+        <div class="contact-block">
+          <a class="email" href="mailto:collinstockmoe@gmail.com">collinstockmoe@gmail.com</a>
+          <a class="social" href="https://www.instagram.com/collinstockmoe/" target="_blank" rel="noopener">instagram</a>
+          <a class="social" href="https://www.linkedin.com/in/collin-stockmoe-900470246/" target="_blank" rel="noopener">linkedin</a>
+        </div>
+      </div>
+    `;
+  }
+
+  // ---- HOME: single block — photo, name, description, directory ----
+  function renderHome(){
+    const navHtml = NAV_LINKS.map(l => `<a href="#${l.route}">${l.label}</a>`).join('');
+    homeBlock.innerHTML = `
+      <img class="home-photo" src="assets/headshot.png" alt="Portrait of Collin Stockmoe">
+      <p class="home-caption">raleigh, nc</p>
+      <h1 class="home-name">Collin Stockmoe</h1>
+      <p class="home-tagline">fashion &amp; textile management — product development &amp; management, nc state university</p>
+      <nav class="home-nav">${navHtml}</nav>
+    `;
+  }
+
+  // ---- LEFT COLUMN (inner pages): identity + nav ----
+  function renderLeftInner(currentRoute){
+    const navHtml = NAV_LINKS.map(l =>
+      `<a href="#${l.route}" data-route="${l.route}"${l.route === currentRoute ? ' class="current"' : ''}>${l.label}</a>`
+    ).join('');
+    leftcol.className = 'bio scroll-col';
+    leftcol.innerHTML = `
+      <div>
+        <h1 class="name">Collin Stockmoe</h1>
+        <img class="headshot" src="assets/headshot.png" alt="Portrait of Collin Stockmoe">
+        <nav class="sitenav" id="sitenav">${navHtml}</nav>
+      </div>
+    `;
+  }
+
+  // ---- CENTER: projects page (visual feed, in specified order, + secondary list) ----
+  function viewProjects(){
+    center.className = 'feed scroll-col';
+    center.innerHTML = '<p class="page-label">Design &amp; Production</p><div id="feedList"></div>';
+    const list = document.getElementById('feedList');
+
+    PROJECTS.filter(p => p.category !== 'Marketing').forEach(p => {
+      const block = document.createElement('div');
+      block.className = 'feed-project';
+      block.innerHTML = `
+        <div class="strip${p.cover ? '' : ' no-image'}" data-id="${p.id}">
+          ${p.cover ? `<img src="${p.cover}" alt="${p.title}">` : 'view project'}
+        </div>
+        <div class="meta-row">
+          <div>
+            <h3>${p.title}</h3>
+            <span class="year">${p.year}</span>
+          </div>
+          <div class="desc">
+            <p>${p.blurb}</p>
+            <button class="view-link" data-id="${p.id}">view the project &rarr;</button>
+          </div>
+        </div>
+      `;
+      list.appendChild(block);
+    });
+
+    const marketing = PROJECTS.filter(p => p.category === 'Marketing');
+    if(marketing.length){
+      const catBlock = document.createElement('div');
+      catBlock.className = 'index-category';
+      catBlock.innerHTML = `<div class="cat-label">Business &amp; Marketing</div>`;
+      marketing.forEach(p => {
+        const btn = document.createElement('button');
+        btn.className = 'index-item';
+        btn.innerHTML = `<span class="idx-title">${p.title}</span><span class="idx-year">${p.year}</span>`;
+        btn.addEventListener('click', () => openProject(p.id));
+        catBlock.appendChild(btn);
+      });
+      list.appendChild(catBlock);
+    }
+
+    list.querySelectorAll('.strip[data-id], .view-link[data-id]').forEach(el => {
+      el.addEventListener('click', () => openProject(el.getAttribute('data-id')));
+    });
+  }
+
+  function viewResume(){
+    center.className = 'feed scroll-col';
+    center.innerHTML = `
+      <p class="page-label">Resume</p>
+      <div class="resume-block">
+        <h2 class="label">Education</h2>
+        <div class="entry">
+          <span class="org">North Carolina State University — Wilson College of Textiles</span>
+          <span class="sub">B.S. Fashion &amp; Textile Management, conc. Product Development &amp; Management — 2023 to present</span>
+          <ul>
+            <li>Curriculum spans business, merchandising, and marketing alongside industry-ready training in pattern-making, grading, and apparel construction.</li>
+            <li>Foundational textile science coursework in fiber science, fabric formation, and material performance.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="resume-block">
+        <h2 class="label">Experience</h2>
+        <div class="entry">
+          <span class="org">Assistant Store Manager / Sales Associate — Tecovas</span>
+          <span class="sub">Raleigh, NC &amp; Dallas, TX — June 2023 to present</span>
+          <ul>
+            <li>Manager on Duty overseeing daily floor operations, inbound shipments, cycle counts, and staff deployment.</li>
+            <li>Drove performance by analyzing KPIs and training the team on customer cadence and product storytelling.</li>
+          </ul>
+        </div>
+        <div class="entry">
+          <span class="org">Special Events Manager — The Sanctuary Music &amp; Events</span>
+          <span class="sub">McKinney, TX — Nov 2022 to Aug 2023</span>
+          <ul>
+            <li>Coordinated logistics and staff for weddings and formal events, managing guest experience start to finish.</li>
+          </ul>
+        </div>
+        <div class="entry">
+          <span class="org">Retail Sales Associate — Brooks Brothers</span>
+          <span class="sub">Allen, TX — Oct 2021 to Nov 2022</span>
+          <ul>
+            <li>Provided tailored-fitting and formalwear styling guidance rooted in classic menswear fundamentals.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="resume-block">
+        <h2 class="label">Skills</h2>
+        <ul>
+          <li>Adobe Illustrator &amp; Photoshop</li>
+          <li>Gerber AccuMark — pattern design, grading, marker making</li>
+          <li>CLO 3D — virtual fitting &amp; simulation</li>
+          <li>Technical product development — tech packs, construction callouts, sourcing</li>
+          <li>Market &amp; trend analysis, supply chain literacy</li>
+        </ul>
+      </div>
+    `;
+  }
+
+  function viewAbout(){
+    center.className = 'feed scroll-col';
+    center.innerHTML = `
+      <p class="page-label">About</p>
+      <div class="prose">
+        <p>junior at north carolina state university studying fashion &amp; textile management, concentrating in product development &amp; management. in my studies, i focus on garment construction, pattern-making, grading, and its implementation into commercial production lines.</p>
+
+        <p>i grew up in dallas, texas, where i found a respect for fashion at a young age — heavily driven and inspired by vintage. that early relationship with the vintage market means my design approach carries a deep respect for fashion history and the people who came before me.</p>
+
+        <p>a lot of how i approach fashion today actually started digitally, not physically. i taught myself illustrator and photoshop around age ten or eleven, originally with graphic design in mind. as i got older and got more into fashion, i realized that was where my real passion lived — the software just became the tool i used to get there.</p>
+
+        <p>fashion history is something i take seriously. because vintage was my entry point into the industry, i started researching the designers behind the pieces i loved, which eventually turned into a year-long senior thesis in high school on the history of fashion as a whole, with a focus on names like rick owens, margiela, the antwerp six, raf simons, and mcqueen. that project shaped how i think — i like to learn everything i can about a subject and pull pieces of it into my own work.</p>
+
+        <p>my major has pushed me to see fashion as a business as much as a craft. i try to work practically, thinking about the production process and whether something can actually be made and sold before it exists for the sake of novelty alone.</p>
+
+        <p>i also got into fashion through reselling, which i've done at different levels for about eight years now. at one point i was buying and reselling a lot of contemporary luxury — rick owens, margiela, alyx, balenciaga — which pushed me deep into trend analysis, and during my prime few years i sold upwards of $30,000 worth of clothing.</p>
+
+        <p>professionally, most of my experience has been in retail, at heritage companies like tecovas and brooks brothers. through my time at tecovas specifically — not through any formal training, just curiosity — i've learned a lot about leather, including more exotic leathers, and have done my share of hands-on customization and cobbling: dyeing, reshaping, relasting, even stitching goodyear welts back onto boots that were falling apart. growing up in texas, surrounded by western wear, gave me a real appreciation for things built to last and to age well over time, which is a large part of why i'm pretty firmly anti-fast-fashion in almost everything i do.</p>
+
+        <p>as a person, i try to approach things with an open mind. i see my life as a process of learning as much as i can and staying open to new experiences and opportunities, because i think failure is usually what drives the most growth.</p>
+
+        <p>looking ahead, i plan to move to new york city in the summer of 2027 after graduation. this semester, i'm also working on my senior studio collection — six looks under the name meridian, focused on balance and built around minimal, detail-oriented design that mixes heritage tailoring with more contemporary ideas. it'll make up the core of my portfolio going forward.</p>
+      </div>
+    `;
+  }
+
+  function viewContact(){
+    center.className = 'feed scroll-col';
+    center.innerHTML = `
+      <p class="page-label">Contact</p>
+      <div class="contact-page">
+        <a href="mailto:collinstockmoe@gmail.com">collinstockmoe@gmail.com</a>
+        <a href="https://www.instagram.com/collinstockmoe/" target="_blank" rel="noopener">instagram</a>
+        <a href="https://www.linkedin.com/in/collin-stockmoe-900470246/" target="_blank" rel="noopener">linkedin</a>
+      </div>
+    `;
+  }
+
+  const INNER_ROUTES = {
+    'projects': viewProjects,
+    'resume': viewResume,
+    'about': viewAbout,
+    'contact': viewContact
+  };
+
+  function route(){
+    const hash = location.hash.replace('#', '');
+
+    if(!hash || !INNER_ROUTES[hash]){
+      // HOME: single left-anchored block — photo, name, description, directory
+      document.body.classList.add('is-home');
+      renderHome();
+    } else {
+      // INNER PAGES: identity + nav (left) + routed content (center) + about/contact (right)
+      document.body.classList.remove('is-home');
+      renderRight();
+      renderLeftInner(hash);
+      INNER_ROUTES[hash]();
+      center.scrollTop = 0;
+    }
+  }
+
+  window.addEventListener('hashchange', route);
+  route();
+</script>
+
+</body>
+</html>
