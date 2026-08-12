@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>collin stockmoe</title>
+<script>
+  // GitHub Pages has no server-side rewrites, so a direct link or a hard
+  // refresh on a clean route (e.g. /projects) lands here instead of
+  // index.html. This stores the path that was actually requested and
+  // bounces back to the site root, where index.html's own script picks
+  // the stored path back up and restores it into the address bar.
+  var KNOWN_ROUTES = ['projects', 'about', 'resume', 'contact'];
+  var path = location.pathname.replace(/\/+$/, '');
+  var segments = path.split('/');
+  var last = segments[segments.length - 1];
+  if (KNOWN_ROUTES.indexOf(last) !== -1) segments.pop();
+  var base = segments.join('/') + '/';
+
+  sessionStorage.redirect = location.pathname + location.search + location.hash;
+  location.replace(base);
+</script>
+</head>
+<body></body>
+</html>
