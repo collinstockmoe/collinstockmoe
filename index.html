@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>collin stockmoe</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+
+  /* ============================================
+     FONT
+     Monument Grotesk Mono is a licensed font and is
+     NOT loaded from a CDN. Drop the woff2 files next
+     to this index.html and they'll be picked up
+     automatically. Until the files are added, this
+     falls back to a comparable system mono.
+
+     TYPE HIERARCHY (site-wide):
+       - Mega name (Collin / Stockmoe)  -> Bold, largest thing on any page
+       - Project / content titles       -> Bold, second tier
+       - Page headings & subheaders     -> Regular, dark, third tier
+       - Body copy (descriptions, prose) -> Light, gray, smallest
+       - Nav: current page -> bold + dark. everything else -> regular + gray
+     ============================================ */
+  @font-face {
+    font-family: 'Monument Grotesk Mono';
+    src: url('MonumentGroteskMono-Thin.woff2') format('woff2');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Monument Grotesk Mono';
+    src: url('MonumentGroteskMono-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Monument Grotesk Mono';
+    src: url('MonumentGroteskMono-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Monument Grotesk Mono';
+    src: url('MonumentGroteskMono-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Monument Grotesk Mono';
+    src: url('MonumentGroteskMono-Italic.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  :root{
+    --mono: 'Monument Grotesk Mono', ui-monospace, 'SF Mono', 'JetBrains Mono', 'Roboto Mono', Consolas, Menlo, monospace;
+    --w-thin: 100;
+    --w-light: 300;
+    --w-regular: 400;
+    --w-bold: 700;
+    --black: #111111;
+    --line: #111111;
+    --gray: #8a8a8a;
+    --paper: #ffffff;
+    --col-left: 320px;
+    --col-right: 300px;
+    --gutter: 28px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--black);
+    font-family: var(--mono);
+    height: 100%;
+    overflow: hidden; /* the columns scroll independently, not the page */
+  }
+
+  body{
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: var(--w-light);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a{
+    color: var(--black);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: var(--w-light);
+  }
+  a:hover{ color: var(--gray); }
+
+  strong, b{ font-weight: var(--w-bold); }
+
+  /* ============================================
+     MEGA NAME — reused on the home page and at the
+     top of every inner-page sidebar. Sized to fill
+     the fixed 320px left column edge to edge, wraps
+     to two lines (COLLIN / STOCKMOE) via block spans.
+     ============================================ */
+  .mega-name{
+    margin: 0 0 20px 0;
+    line-height: 0.9;
+  }
+  .mega-name .word{
+    display: block;
+    font-size: 54px;
+    font-weight: var(--w-bold);
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* ============================================
+     INNER PAGES: 3-column grid
+     (left = identity/nav, center = routed content,
+     right = about + contact, varies per page)
+     ============================================ */
+  .wrap{
+    display: none;
+    grid-template-columns: var(--col-left) 1px 1fr 1px var(--col-right);
+    height: 100vh;
+  }
+  body:not(.is-home) .wrap{ display: grid; }
+  .wrap.no-right{
+    grid-template-columns: var(--col-left) 1px 1fr;
+  }
+  .wrap.no-right #ruleRight,
+  .wrap.no-right #rightcol{
+    display: none;
+  }
+
+  .rule-v{
+    background: var(--line);
+    width: 1px;
+    height: 100vh;
+  }
+
+  .scroll-col{
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+  }
+  .scroll-col::-webkit-scrollbar{ width: 6px; }
+  .scroll-col::-webkit-scrollbar-thumb{ background: #dcdcdc; }
+  .scroll-col::-webkit-scrollbar-track{ background: transparent; }
+
+  /* ---------- LEFT (INNER PAGES): IDENTITY + NAV ---------- */
+  .bio{
+    padding: var(--gutter);
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .headshot{
+    width: 100%;
+    aspect-ratio: 648 / 710;
+    object-fit: cover;
+    filter: grayscale(100%);
+    display: block;
+    border: 1px solid var(--line);
+    margin-bottom: 26px;
+  }
+
+  .hr{
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 20px 0;
+  }
+
+  .contact-block a.email{
+    display: block;
+    text-decoration: none;
+    color: var(--gray);
+    margin-bottom: 10px;
+  }
+  .contact-block a.email:hover{ color: var(--black); }
+  .contact-block a.social{
+    display: block;
+    margin-bottom: 4px;
+    text-decoration: none;
+    color: var(--black);
+    font-weight: var(--w-regular);
+  }
+  .contact-block a.social:hover{ color: var(--gray); }
+
+  /* nav links, both the inner sidebar and the home directory:
+     current page is bold + dark, everything else is regular + gray,
+     all at the same font size */
+  nav.sitenav{
+    margin-top: 6px;
+  }
+  nav.sitenav a{
+    display: block;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: var(--w-regular);
+    color: var(--gray);
+    margin-bottom: 20px;
+    letter-spacing: 0.01em;
+  }
+  nav.sitenav a:hover{ color: var(--black); }
+  nav.sitenav a.current{
+    color: var(--black);
+    font-weight: var(--w-bold);
+  }
+
+  h2.label{
+    font-size: 11px;
+    font-weight: var(--w-regular);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--black);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    margin: 0 0 10px 0;
+  }
+
+  /* ---------- CENTER (INNER PAGES): ROUTED CONTENT ---------- */
+  .feed{
+    padding: var(--gutter);
+    min-height: 100%;
+  }
+
+  /* page heading / kicker — sits above the larger content
+     titles it introduces (e.g. project names), so it reads
+     as a true subheader without competing with them */
+  .page-label{
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 22px;
+    font-weight: var(--w-regular);
+    color: var(--black);
+    margin: 0 0 34px 0;
+  }
+
+  /* -- projects feed: one project at a time, large format -- */
+  .feed-project{
+    margin-bottom: 64px;
+  }
+  .feed-project .strip{
+    width: 100%;
+    display: block;
+    border: 1px solid var(--line);
+    margin-bottom: 20px;
+    cursor: pointer;
+    background: #f4f4f4;
+    text-decoration: none;
+    color: inherit;
+  }
+  .feed-project .strip img{
+    width: 100%;
+    display: block;
+    filter: grayscale(15%);
+    transition: filter .2s ease;
+  }
+  .feed-project .strip:hover img{ filter: grayscale(0%); }
+  .feed-project .strip.no-image{
+    aspect-ratio: 16 / 7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .feed-project .meta-row{
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 40px;
+  }
+  .feed-project h3{
+    font-size: 30px;
+    font-weight: var(--w-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    margin: 0 0 6px 0;
+  }
+  .feed-project .year{
+    font-size: 12px;
+    color: var(--gray);
+    font-weight: var(--w-light);
+  }
+  .feed-project .desc p{
+    margin: 0 0 16px 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--gray);
+    font-weight: var(--w-light);
+  }
+  .feed-project .view-link{
+    font-size: 13px;
+    font-weight: var(--w-regular);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--black);
+    font-family: var(--mono);
+  }
+  .feed-project .view-link:hover{ color: var(--gray); }
+
+  @media (max-width: 760px){
+    .feed-project .meta-row{ grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* -- secondary projects list (business & marketing) -- */
+  .index-category{
+    margin-top: 12px;
+    margin-bottom: 40px;
+  }
+  .index-category .cat-label{
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--black);
+    font-weight: var(--w-regular);
+    margin-bottom: 14px;
+  }
+  .index-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 20px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eaeaea;
+    cursor: pointer;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    width: 100%;
+    text-align: left;
+    font-family: var(--mono);
+    text-decoration: none;
+    color: inherit;
+  }
+  .index-item .idx-title{
+    font-size: 16px;
+    font-weight: var(--w-light);
+    color: var(--black);
+  }
+  .index-item:hover .idx-title{ color: var(--gray); text-decoration: underline; }
+  .index-item .idx-year{
+    font-size: 12px;
+    color: var(--gray);
+    white-space: nowrap;
+  }
+
+  /* -- resume page -- */
+  .resume-block{ margin-bottom: 30px; }
+  .resume-block .entry{
+    margin-bottom: 18px;
+  }
+  .resume-block .org{
+    font-style: italic;
+    font-weight: var(--w-regular);
+    color: var(--black);
+    display: block;
+  }
+  .resume-block .sub{ display: block; color: var(--gray); font-size: 12px; margin-bottom: 6px; }
+  .resume-block ul{
+    margin: 6px 0 0 0;
+    padding-left: 16px;
+  }
+  .resume-block li{
+    margin-bottom: 4px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray);
+    font-weight: var(--w-light);
+  }
+
+  /* -- about page (no right column — gets the extra width, used
+        here for a comfortable reading measure rather than columns) -- */
+  .about-mobile-photo{
+    display: none;
+  }
+  .about-prose{
+    max-width: 68ch;
+  }
+  .about-prose p{
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--gray);
+    font-weight: var(--w-light);
+    margin: 0 0 26px 0;
+  }
+
+  /* -- contact page -- */
+  .contact-form{
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 460px;
+    margin-bottom: 44px;
+  }
+  .contact-form label{
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--black);
+    font-weight: var(--w-regular);
+  }
+  .contact-form input,
+  .contact-form textarea{
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--black);
+    border: none;
+    border-bottom: 1px solid var(--line);
+    background: transparent;
+    padding: 8px 0;
+    outline: none;
+    resize: vertical;
+  }
+  .contact-form input:focus,
+  .contact-form textarea:focus{
+    border-bottom-color: var(--gray);
+  }
+  .contact-form .form-submit{
+    align-self: flex-start;
+    margin-top: 6px;
+    padding: 11px 24px;
+    background: var(--black);
+    color: var(--paper);
+    border: none;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+  }
+  .contact-form .form-submit:hover{ background: var(--gray); }
+  .contact-form .form-submit:disabled{ background: var(--gray); cursor: default; }
+  .form-status{
+    font-size: 12px;
+    color: var(--gray);
+    margin: -8px 0 0 0;
+  }
+
+  .contact-page-label{
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--black);
+    font-weight: var(--w-regular);
+    margin: 0 0 14px 0;
+  }
+  .contact-page a{
+    display: block;
+    font-size: 18px;
+    font-weight: var(--w-regular);
+    color: var(--black);
+    margin-bottom: 12px;
+    text-decoration: none;
+  }
+  .contact-page a:hover{ color: var(--gray); }
+
+  /* ---------- RIGHT (INNER PAGES): varies per page ---------- */
+  .rightcol{
+    padding: var(--gutter);
+    min-height: 100%;
+  }
+  .rightcol .about-brief{
+    margin-bottom: 30px;
+  }
+  .rightcol .about-brief p{
+    font-size: 12.5px;
+    line-height: 1.6;
+    margin: 0;
+    color: var(--gray);
+    font-weight: var(--w-light);
+    text-transform: lowercase;
+  }
+
+  /* ============================================
+     HOME PAGE (desktop): name + description pinned
+     top-left in normal flow, directory centered via
+     absolute positioning. No photo on desktop.
+     DOM order is intro, photo, desc, directory —
+     the same flat order mobile uses, just with the
+     photo hidden and the directory pulled out of
+     flow to the center.
+     ============================================ */
+  .home-page{
+    display: none;
+    position: relative;
+    height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: var(--gutter);
+  }
+  body.is-home .home-page{ display: block; }
+
+  .home-intro,
+  .home-desc{
+    max-width: 320px;
+  }
+  .home-desc .home-tagline{
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--gray);
+    font-weight: var(--w-light);
+    text-transform: lowercase;
+    margin: 0 0 14px 0;
+    max-width: 34ch;
+  }
+  .home-desc .home-caption{
+    font-size: 11px;
+    color: var(--gray);
+    font-weight: var(--w-light);
+    margin: 0;
+  }
+
+  /* photo — mobile only, hidden on desktop entirely */
+  .home-photo-wrap{
+    display: none;
+  }
+  .home-photo-wrap img{
+    width: 100%;
+    aspect-ratio: 648 / 710;
+    object-fit: cover;
+    filter: grayscale(100%);
+    border: 1px solid var(--line);
+    display: block;
+  }
+
+  .home-directory-wrap{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  nav.home-nav{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  nav.home-nav a{
+    font-size: 26px;
+    font-weight: var(--w-regular);
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    width: fit-content;
+  }
+  nav.home-nav a:hover{ color: var(--black); }
+  nav.home-nav a.current{
+    color: var(--black);
+    font-weight: var(--w-bold);
+  }
+
+  /* ---------- BACK TO TOP (mobile only) ---------- */
+  .back-to-top{
+    display: none;
+  }
+
+  /* ---------- PROJECT DETAIL PAGE: pdf pages stacked in normal
+     scroll flow (used instead of a modal) ---------- */
+  .pdf-pages{
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 900px;
+  }
+  .pdf-page-slot{
+    width: 100%;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f4f4f4;
+    border: 1px solid var(--line);
+  }
+  .pdf-page-slot canvas{
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .pdf-status-inline{
+    font-size: 13px;
+    color: var(--gray);
+  }
+  .pdf-status-inline a{ color: var(--black); }
+
+  /* ---------- SIDEBAR: projects dropdown ---------- */
+  .nav-projects-row{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .nav-projects-row a{
+    margin-bottom: 0;
+  }
+  .nav-toggle{
+    background: none;
+    border: 1px solid var(--gray);
+    color: var(--gray);
+    width: 18px;
+    height: 18px;
+    line-height: 1;
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .nav-toggle:hover{ color: var(--black); border-color: var(--black); }
+  .nav-sublist{
+    display: none;
+    flex-direction: column;
+    margin: -10px 0 20px 0;
+    padding-left: 16px;
+    border-left: 1px solid #eaeaea;
+  }
+  .nav-sublist.open{ display: flex; }
+  .nav-sublist a{
+    display: block;
+    font-size: 12.5px;
+    font-weight: var(--w-light);
+    color: var(--gray);
+    text-decoration: none;
+    margin-bottom: 12px;
+    letter-spacing: 0.01em;
+  }
+  .nav-sublist a:hover{ color: var(--black); }
+  .nav-sublist a.current{
+    color: var(--black);
+    font-weight: var(--w-regular);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1080px){
+    html, body{ overflow: auto; height: auto; }
+    body:not(.is-home) .wrap,
+    body:not(.is-home) .wrap.no-right{
+      grid-template-columns: 1fr;
+      height: auto;
+    }
+    .rule-v{
+      width: 100%;
+      height: 1px;
+    }
+    .scroll-col{
+      height: auto;
+      overflow: visible;
+    }
+    .bio,
+    .feed,
+    .rightcol{
+      min-height: auto;
+    }
+
+    /* name: centered as a block on the page, but its own text stays
+       flush-left, so COLLIN and STOCKMOE share the same left edge.
+       identical on the home page and every inner page. */
+    .mega-name{
+      width: fit-content;
+      margin: 0 auto 20px auto;
+      text-align: left;
+    }
+    .mega-name .word{ font-size: clamp(40px, 13vw, 84px); }
+
+    /* ---- HOME: name, photo, description, directory — in that order.
+       DOM order already matches this, so no flex `order` is needed
+       here at all — just switch from absolute-centered directory to
+       normal stacked flow. ---- */
+    body.is-home .home-page{
+      display: block;
+      height: auto;
+      overflow: visible;
+      padding: var(--gutter);
+    }
+    .home-photo-wrap{
+      display: block;
+      max-width: 420px;
+      width: 100%;
+      margin: 0 auto 36px auto;
+    }
+    .home-desc{
+      text-align: center;
+      margin: 0 auto 44px auto;
+      max-width: 340px;
+    }
+    .home-desc .home-tagline,
+    .home-desc .home-caption{
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .home-directory-wrap{
+      position: static;
+      top: auto;
+      left: auto;
+      transform: none;
+    }
+    nav.home-nav{
+      align-items: center;
+    }
+    nav.home-nav a{
+      width: auto;
+    }
+
+    /* ---- INNER PAGES: name, then a compact horizontal nav right
+       below it, then (about page only) the headshot. Order and
+       whether the photo exists at all is decided in JS at render
+       time (see renderLeftInner) rather than via CSS order/display
+       toggles, which is more reliable across browsers. ---- */
+    .bio nav.sitenav{
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+    }
+    .bio nav.sitenav a{
+      display: inline-block;
+      margin-bottom: 0;
+    }
+    /* sidebar photo is desktop-only now — always off on mobile,
+       regardless of route, so there's no per-page state to leak */
+    .bio .headshot{
+      display: none;
+    }
+
+    /* About page's own photo, shown in the page content itself
+       (mobile only — desktop still gets it from the sidebar) */
+    .about-mobile-photo{
+      display: block;
+      width: 100%;
+      max-width: 340px;
+      aspect-ratio: 648 / 710;
+      object-fit: cover;
+      filter: grayscale(100%);
+      border: 1px solid var(--line);
+      margin: 0 0 40px 0;
+    }
+
+    .feed-project .meta-row{
+      grid-template-columns: 1fr;
+    }
+    .back-to-top{
+      display: block;
+      width: 100%;
+      margin: 50px 0 24px 0;
+      padding: 15px;
+      text-align: center;
+      background: none;
+      border: 1px solid var(--line);
+      font-family: var(--mono);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--black);
+      cursor: pointer;
+    }
+    .back-to-top:hover{ background: var(--black); color: var(--paper); }
+    body.is-home .back-to-top{ display: none; }
+  }
+
+  @media (max-width: 480px){
+    :root{ --gutter: 18px; }
+    body{ font-size: 12.5px; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- HOME: name + description top-left, directory truly centered -->
+<div class="home-page" id="homePage">
+  <div class="home-intro" id="homeIntro"></div>
+  <div class="home-photo-wrap" id="homePhotoWrap"></div>
+  <div class="home-desc" id="homeDesc"></div>
+  <div class="home-directory-wrap">
+    <div class="home-directory" id="homeDirectory"></div>
+  </div>
+</div>
+
+<!-- INNER PAGES: identity/nav (left) + routed content (center) + right column (varies per page) -->
+<div class="wrap" id="wrap">
+  <aside class="scroll-col" id="leftcol"></aside>
+  <div class="rule-v" id="ruleLeft"></div>
+  <main class="scroll-col" id="center-content"></main>
+  <div class="rule-v" id="ruleRight"></div>
+  <aside class="rightcol scroll-col" id="rightcol"></aside>
+</div>
+
+<!-- back to top — mobile only, sits after whichever container is active -->
+<button class="back-to-top" id="backToTop" type="button">back to top &uarr;</button>
+
+<!-- PDF.js — renders each project's PDF pages to canvas directly in
+     the page, so viewing is consistent across desktop and mobile
+     instead of depending on each browser's native PDF plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script>
+  // ---- clean URL routing (no #) ----
+  // GitHub Pages serves static files with no server-side rewrites, so a
+  // hard refresh or direct link to e.g. /projects would normally 404.
+  // 404.html stores the path the visitor actually wanted and bounces
+  // back here; this restores it into the address bar before anything
+  // else runs, with no visible reload.
+  (function(){
+    const redirect = sessionStorage.redirect;
+    delete sessionStorage.redirect;
+    if(redirect && redirect !== location.pathname + location.search + location.hash){
+      history.replaceState(null, '', redirect);
+    }
+  })();
+
+  // ---- project data (display order = Saddles, Dress Trousers, Modern Americana, Universal Design) ----
+  const PROJECTS = [
+    {
+      id: 'saddles',
+      title: 'Saddles — Big &amp; Tall Shacket',
+      year: '2025',
+      category: 'Product Development',
+      blurb: 'Technical design, grading, and marker-making for a patchwork canvas shacket, built as a complete Men\u2019s Big &amp; Tall (XL to 5XL) size run.',
+      cover: 'assets/saddles-preview.png',
+      pdf: 'projects/saddles.pdf'
+    },
+    {
+      id: 'dress-trousers',
+      title: 'Dress Trousers',
+      year: '2025',
+      category: 'Product Development',
+      blurb: 'A fully handmade pair of dress trousers, drafted over three fit iterations to refine rise, seat drape, and waist suppression.',
+      cover: 'assets/dress-trousers-preview.png',
+      pdf: 'projects/dress-trousers.pdf'
+    },
+    {
+      id: 'modern-americana',
+      title: 'Modern Americana',
+      year: '2025',
+      category: 'Computer Aided Design',
+      blurb: 'A digitally developed menswear capsule rooted in Westernwear tradition, carried from mood board through Gerber AccuMark patterns and CLO3D virtual fitting.',
+      cover: null,
+      pdf: 'projects/modern-americana.pdf'
+    },
+    {
+      id: 'universal-design',
+      title: 'Universal Design Trousers',
+      year: '2025',
+      category: 'Product Development',
+      blurb: 'A trouser patterned around NC State\u2019s Principles of Universal Design, with an adjustable back belt tab built in for a more accommodating fit.',
+      cover: null,
+      pdf: 'projects/universal-design.pdf'
+    },
+    {
+      id: 'allen-edmonds',
+      title: 'Allen Edmonds — Gen-X Brand Analysis',
+      year: '2025',
+      category: 'Marketing',
+      blurb: 'A brand and SWOT analysis exploring how Allen Edmonds can deepen relevance with Generation X through personalization, retail experience, and strategic partnerships.',
+      cover: null,
+      pdf: 'projects/allen-edmonds.pdf'
+    }
+  ];
+
+  const TOP_ROUTES = ['projects', 'about', 'resume', 'contact'];
+  const PROJECT_IDS = PROJECTS.map(p => p.id);
+
+  // works whether this site lives at a domain root (username.github.io/)
+  // or a project subpath (username.github.io/reponame/) — derives the
+  // base from whatever the current path actually is, so nothing here
+  // needs to be hand-configured per repo. Handles both single-segment
+  // routes (/about) and two-segment project pages (/projects/saddles).
+  function computeBasePath(){
+    let path = location.pathname.replace(/\/+$/, '');
+    const segments = path.split('/');
+    const last = segments[segments.length - 1];
+    const secondLast = segments[segments.length - 2];
+    if(secondLast === 'projects' && PROJECT_IDS.includes(last)){
+      segments.pop();
+      segments.pop();
+    } else if(TOP_ROUTES.includes(last)){
+      segments.pop();
+    }
+    return segments.join('/') + '/';
+  }
+  const BASE_PATH = computeBasePath();
+
+  function routeHref(route){
+    return route === '' ? BASE_PATH : BASE_PATH + route;
+  }
+
+  // returns '', 'projects', 'about', 'resume', 'contact', or
+  // 'projects/<id>' for an individual project's page
+  function currentRouteFromPath(){
+    let path = location.pathname;
+    if(path.startsWith(BASE_PATH)) path = path.slice(BASE_PATH.length);
+    path = path.replace(/^\/+|\/+$/g, '');
+    if(!path) return '';
+    const parts = path.split('/');
+    if(parts.length === 1 && TOP_ROUTES.includes(parts[0])) return parts[0];
+    if(parts.length === 2 && parts[0] === 'projects' && PROJECT_IDS.includes(parts[1])){
+      return 'projects/' + parts[1];
+    }
+    return '';
+  }
+
+
+
+  // ---- PDF viewer (renders each project's pages inline on its own
+  // page, lazily as they scroll into view, instead of a modal) ----
+  const PDF_LIB_READY = typeof pdfjsLib !== 'undefined';
+  if(PDF_LIB_READY){
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  let pdfDetailToken = 0;
+  let pdfDetailObserver = null;
+
+  async function viewProjectDetail(id){
+    const p = PROJECTS.find(x => x.id === id);
+    const token = ++pdfDetailToken;
+    if(pdfDetailObserver){ pdfDetailObserver.disconnect(); pdfDetailObserver = null; }
+
+    if(!p){
+      viewProjects();
+      return;
+    }
+
+    center.className = 'feed scroll-col';
+    center.innerHTML = `
+      <p class="page-label">${p.title.replace(/&amp;/g, '&')}</p>
+      <div class="pdf-pages" id="pdfPages"></div>
+    `;
+    const pagesEl = document.getElementById('pdfPages');
+
+    if(!PDF_LIB_READY){
+      pagesEl.innerHTML = `<p class="pdf-status-inline">the pdf viewer didn't load. <a href="${p.pdf}" target="_blank" rel="noopener">open the pdf directly instead</a>.</p>`;
+      return;
+    }
+
+    pagesEl.innerHTML = '<p class="pdf-status-inline">loading…</p>';
+
+    try{
+      const doc = await pdfjsLib.getDocument(p.pdf).promise;
+      if(token !== pdfDetailToken) return; // navigated away while loading
+
+      pagesEl.innerHTML = '';
+      for(let i = 1; i <= doc.numPages; i++){
+        const slot = document.createElement('div');
+        slot.className = 'pdf-page-slot';
+        slot.dataset.pageNum = String(i);
+        pagesEl.appendChild(slot);
+      }
+
+      pdfDetailObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if(entry.isIntersecting){
+            pdfDetailObserver.unobserve(entry.target);
+            renderDetailPage(doc, entry.target, token);
+          }
+        });
+      }, { rootMargin: '600px 0px' });
+
+      Array.from(pagesEl.children).forEach(slot => pdfDetailObserver.observe(slot));
+    } catch(err){
+      if(token !== pdfDetailToken) return;
+      pagesEl.innerHTML = `<p class="pdf-status-inline">this pdf couldn't be loaded here. <a href="${p.pdf}" target="_blank" rel="noopener">open it directly instead</a>.</p>`;
+    }
+  }
+
+  function renderDetailPage(doc, slot, token){
+    const num = parseInt(slot.dataset.pageNum, 10);
+    doc.getPage(num).then(page => {
+      if(token !== pdfDetailToken) return;
+      const width = slot.clientWidth || center.clientWidth || 800;
+      const base = page.getViewport({ scale: 1 });
+      const scale = width / base.width;
+      const viewport = page.getViewport({ scale });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+
+      page.render({ canvasContext: ctx, viewport }).promise.then(() => {
+        if(token !== pdfDetailToken) return;
+        slot.innerHTML = '';
+        slot.appendChild(canvas);
+      });
+    });
+  }
+
+  // ---- back to top (mobile) ----
+  document.getElementById('backToTop').addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ---- shared nav link data ----
+  const NAV_LINKS = [
+    { route: '', label: 'home' },
+    { route: 'projects', label: 'projects' },
+    { route: 'about', label: 'about' },
+    { route: 'resume', label: 'resume' },
+    { route: 'contact', label: 'contact' }
+  ];
+
+  let projectsNavOpen = false;
+
+  // opts.projectsDropdown adds a collapsible list of project links
+  // under "projects" — used in the persistent sidebar, not the home
+  // page's centered directory
+  function buildNav(currentRoute, opts){
+    opts = opts || {};
+    const inProjectsArea = currentRoute === 'projects' || currentRoute.startsWith('projects/');
+    if(opts.projectsDropdown && inProjectsArea) projectsNavOpen = true;
+
+    return NAV_LINKS.map(l => {
+      const isCurrent = l.route === 'projects' ? inProjectsArea : l.route === currentRoute;
+      const link = `<a href="${routeHref(l.route)}" data-route="${l.route}"${isCurrent ? ' class="current"' : ''}>${l.label}</a>`;
+
+      if(l.route !== 'projects' || !opts.projectsDropdown){
+        return link;
+      }
+
+      const subLinks = PROJECTS.filter(p => p.category !== 'Marketing').map(p => {
+        const projRoute = 'projects/' + p.id;
+        const projCurrent = currentRoute === projRoute;
+        return `<a href="${routeHref(projRoute)}" data-route="${projRoute}"${projCurrent ? ' class="current"' : ''}>${p.title.replace(/&amp;/g, '&')}</a>`;
+      }).join('');
+
+      return `
+        <div class="nav-projects-row">
+          ${link}
+          <button type="button" class="nav-toggle" id="navProjectsToggle" aria-label="Toggle project list">${projectsNavOpen ? '\u2212' : '+'}</button>
+        </div>
+        <div class="nav-sublist${projectsNavOpen ? ' open' : ''}" id="navSublist">${subLinks}</div>
+      `;
+    }).join('');
+  }
+
+  const homeIntro = document.getElementById('homeIntro');
+  const homeDesc = document.getElementById('homeDesc');
+  const homePhotoWrap = document.getElementById('homePhotoWrap');
+  const homeDirectory = document.getElementById('homeDirectory');
+  const wrap = document.getElementById('wrap');
+  const leftcol = document.getElementById('leftcol');
+  const center = document.getElementById('center-content');
+  const rightcol = document.getElementById('rightcol');
+
+  const MEGA_NAME = '<span class="word">Collin</span><span class="word">Stockmoe</span>';
+
+  // ---- RIGHT COLUMN (inner pages): About+Contact by default,
+  // Contact only on Resume, hidden entirely on About (see route()) ----
+  function renderRight(hash){
+    const showAbout = hash !== 'resume';
+    rightcol.innerHTML = `
+      ${showAbout ? `
+      <div class="about-brief">
+        <h2 class="label">About</h2>
+        <p>junior at north carolina state university studying fashion &amp; textile management. focused on garment construction, pattern development, and technical design.</p>
+      </div>
+      <hr class="hr">` : ''}
+      <div>
+        <h2 class="label">Contact</h2>
+        <div class="contact-block">
+          <a class="email" href="mailto:collinstockmoe@gmail.com">collinstockmoe@gmail.com</a>
+          <a class="social" href="https://www.instagram.com/collinstockmoe/" target="_blank" rel="noopener">instagram</a>
+          <a class="social" href="https://www.linkedin.com/in/collin-stockmoe-900470246/" target="_blank" rel="noopener">linkedin</a>
+        </div>
+      </div>
+    `;
+  }
+
+  // ---- HOME: name + description grouped top-left on desktop;
+  // reordered to name / photo / description / directory on mobile ----
+  function renderHome(){
+    homeIntro.innerHTML = `<h1 class="mega-name">${MEGA_NAME}</h1>`;
+    homeDesc.innerHTML = `
+      <p class="home-tagline">fashion &amp; textile management, concentrating in product development &amp; management at nc state university.</p>
+      <p class="home-caption">raleigh, nc</p>
+    `;
+    homePhotoWrap.innerHTML = `<img src="assets/headshot.png" alt="Portrait of Collin Stockmoe">`;
+    homeDirectory.innerHTML = `<nav class="home-nav">${buildNav('')}</nav>`;
+  }
+
+  // ---- LEFT COLUMN (inner pages): mega name + nav + (about only) photo.
+  // Desktop keeps name / photo / nav order; mobile reorders to
+  // name / nav / photo via CSS so the header matches the home page
+  // and the photo only shows on About. ----
+  function renderLeftInner(currentRoute){
+    leftcol.className = 'bio scroll-col';
+    leftcol.innerHTML = `
+      <h1 class="mega-name">${MEGA_NAME}</h1>
+      <img class="headshot" src="assets/headshot.png" alt="Portrait of Collin Stockmoe">
+      <nav class="sitenav" id="sitenav">${buildNav(currentRoute, { projectsDropdown: true })}</nav>
+    `;
+    const toggleBtn = document.getElementById('navProjectsToggle');
+    if(toggleBtn){
+      toggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        projectsNavOpen = !projectsNavOpen;
+        renderLeftInner(currentRoute);
+      });
+    }
+  }
+
+  // ---- CENTER: projects page (visual feed, in specified order, + secondary list) ----
+  function viewProjects(){
+    center.className = 'feed scroll-col';
+    center.innerHTML = '<p class="page-label">Design &amp; Production</p><div id="feedList"></div>';
+    const list = document.getElementById('feedList');
+
+    PROJECTS.filter(p => p.category !== 'Marketing').forEach(p => {
+      const href = routeHref('projects/' + p.id);
+      const block = document.createElement('div');
+      block.className = 'feed-project';
+      block.innerHTML = `
+        <a class="strip${p.cover ? '' : ' no-image'}" href="${href}" data-route="projects/${p.id}">
+          ${p.cover ? `<img src="${p.cover}" alt="${p.title}">` : 'view project'}
+        </a>
+        <div class="meta-row">
+          <div>
+            <h3>${p.title}</h3>
+            <span class="year">${p.year}</span>
+          </div>
+          <div class="desc">
+            <p>${p.blurb}</p>
+            <a class="view-link" href="${href}" data-route="projects/${p.id}">view the project &rarr;</a>
+          </div>
+        </div>
+      `;
+      list.appendChild(block);
+    });
+
+    const marketing = PROJECTS.filter(p => p.category === 'Marketing');
+    if(marketing.length){
+      const catBlock = document.createElement('div');
+      catBlock.className = 'index-category';
+      catBlock.innerHTML = `<div class="cat-label">Business &amp; Marketing</div>`;
+      marketing.forEach(p => {
+        const href = routeHref('projects/' + p.id);
+        const a = document.createElement('a');
+        a.className = 'index-item';
+        a.href = href;
+        a.setAttribute('data-route', 'projects/' + p.id);
+        a.innerHTML = `<span class="idx-title">${p.title}</span><span class="idx-year">${p.year}</span>`;
+        catBlock.appendChild(a);
+      });
+      list.appendChild(catBlock);
+    }
+  }
+
+  function viewResume(){
+    center.className = 'feed scroll-col';
+    center.innerHTML = `
+      <p class="page-label">Resume</p>
+      <div class="resume-block">
+        <h2 class="label">Education</h2>
+        <div class="entry">
+          <span class="org">North Carolina State University — Wilson College of Textiles</span>
+          <span class="sub">B.S. Fashion &amp; Textile Management, conc. Product Development &amp; Management — 2023 to present</span>
+          <ul>
+            <li>Curriculum spans business, merchandising, and marketing alongside industry-ready training in pattern-making, grading, and apparel construction.</li>
+            <li>Foundational textile science coursework in fiber science, fabric formation, and material performance.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="resume-block">
+        <h2 class="label">Experience</h2>
+        <div class="entry">
+          <span class="org">Assistant Store Manager / Sales Associate — Tecovas</span>
+          <span class="sub">Raleigh, NC &amp; Dallas, TX — June 2023 to present</span>
+          <ul>
+            <li>Manager on Duty overseeing daily floor operations, inbound shipments, cycle counts, and staff deployment.</li>
+            <li>Drove performance by analyzing KPIs and training the team on customer cadence and product storytelling.</li>
+          </ul>
+        </div>
+        <div class="entry">
+          <span class="org">Special Events Manager — The Sanctuary Music &amp; Events</span>
+          <span class="sub">McKinney, TX — Nov 2022 to Aug 2023</span>
+          <ul>
+            <li>Coordinated logistics and staff for weddings and formal events, managing guest experience start to finish.</li>
+          </ul>
+        </div>
+        <div class="entry">
+          <span class="org">Retail Sales Associate — Brooks Brothers</span>
+          <span class="sub">Allen, TX — Oct 2021 to Nov 2022</span>
+          <ul>
+            <li>Provided tailored-fitting and formalwear styling guidance rooted in classic menswear fundamentals.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="resume-block">
+        <h2 class="label">Skills</h2>
+        <ul>
+          <li>Adobe Illustrator &amp; Photoshop</li>
+          <li>Gerber AccuMark — pattern design, grading, marker making</li>
+          <li>CLO 3D — virtual fitting &amp; simulation</li>
+          <li>Technical product development — tech packs, construction callouts, sourcing</li>
+          <li>Market &amp; trend analysis, supply chain literacy</li>
+        </ul>
+      </div>
+    `;
+  }
+
+  function viewAbout(){
+    center.className = 'feed scroll-col';
+    center.innerHTML = `
+      <p class="page-label">About</p>
+
+      <img class="about-mobile-photo" src="assets/headshot.png" alt="Portrait of Collin Stockmoe">
+
+      <div class="about-prose">
+        <p>My relationship with fashion began through a respect for vintage and secondhand clothing, partly due to accessibility but also the understanding of garments that age and last years, if not decades, of wear. Design processes that have lasted the test of time, representing a moment stuck in time that has reinvented itself through different people and forms of wear. I spent much of my early experience in fashion reverse engineering vintage garments and putting them back together, understanding every stitch and the intention behind the design that survived such wear. My first sewing machine was an 80's Husqvarna Viking, the manual unintelligible to me with its Norwegian typography, but preconditioned through decades of use from my great-grandmother down generations to me. My love for fashion, therefore, has come vividly through those that came before me and has forged my viewpoint on how I approach design and production as a whole.</p>
+
+        <p>My design orbit revolves around process before novelty. Driven by the subversion of the 1980s and 1990s anti-fashion movement, I operate at the intersection of intentional design and artisanal precision, focusing on raw construction, material integrity, and purpose over trend. Currently studying Fashion &amp; Textile Management at North Carolina State University, my work centers on product development, pattern development, and technical design. Self-taught in digital design software alongside formal technical training, I view digital tools as essential bridges between initial concept and physical production. Coupled with my academic background in textiles, I approach design from the fiber up, combining technical science with commercial reality.</p>
+
+        <p>My technical training is backed by hands-on industry experience at heritage retailers like Brooks Brothers and Tecovas. Working directly with traditional menswear tailoring and Western leatherwork reinforced that clothing is at its best when it serves a purpose, shifting my focus toward functional design where utility, construction, and long-term wearability drive the aesthetic.</p>
+
+        <p>Currently entering my senior year, my semester-long studio collection, Meridian, synthesizes this perspective with a six-look exploration of minimal, detail-driven design that balances heritage tailoring with contemporary design principles. The collection explores the space between tension: masculine and feminine, structured and fluid, fashion and anti-fashion, using intentional layering and material contrast to create quiet impact. It is a study in restraint, where no element is decorative, and every seam, line, and fabric pairing exists for a distinct purpose.</p>
+      </div>
+    `;
+  }
+
+  function viewContact(){
+    center.className = 'feed scroll-col';
+    center.innerHTML = `
+      <p class="page-label">Contact</p>
+
+      <!--
+        FORM SETUP: this posts to Formspree (https://formspree.io), a free
+        service that forwards form submissions straight to an inbox with
+        no backend required. Replace YOUR_FORM_ID below with the endpoint
+        Formspree gives you after you create a free account and a new form.
+      -->
+      <form class="contact-form" id="contactForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <label>name
+          <input type="text" name="name" required>
+        </label>
+        <label>email
+          <input type="email" name="email" required>
+        </label>
+        <label>subject
+          <input type="text" name="subject" required>
+        </label>
+        <label>message
+          <textarea name="message" rows="6" required></textarea>
+        </label>
+        <button type="submit" class="form-submit">send message</button>
+        <p class="form-status" id="formStatus"></p>
+      </form>
+
+      <p class="contact-page-label">or reach me directly</p>
+      <div class="contact-page">
+        <a href="mailto:collinstockmoe@gmail.com">collinstockmoe@gmail.com</a>
+        <a href="https://www.instagram.com/collinstockmoe/" target="_blank" rel="noopener">instagram</a>
+        <a href="https://www.linkedin.com/in/collin-stockmoe-900470246/" target="_blank" rel="noopener">linkedin</a>
+      </div>
+    `;
+
+    const form = document.getElementById('contactForm');
+    const status = document.getElementById('formStatus');
+    const submitBtn = form.querySelector('.form-submit');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.textContent = 'sending...';
+      submitBtn.disabled = true;
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+        if(res.ok){
+          status.textContent = 'message sent — thanks, i will get back to you soon.';
+          form.reset();
+        } else {
+          status.textContent = 'something went wrong. please email me directly instead.';
+        }
+      } catch(err){
+        status.textContent = 'something went wrong. please email me directly instead.';
+      }
+      submitBtn.disabled = false;
+    });
+  }
+
+  const INNER_ROUTES = {
+    'projects': viewProjects,
+    'resume': viewResume,
+    'about': viewAbout,
+    'contact': viewContact
+  };
+
+  const PAGE_TITLES = {
+    '': 'collin stockmoe',
+    'projects': 'collin stockmoe - projects',
+    'about': 'collin stockmoe - about',
+    'resume': 'collin stockmoe - resume',
+    'contact': 'collin stockmoe - contact'
+  };
+
+  function route(){
+    const current = currentRouteFromPath();
+    const isProjectDetail = current.startsWith('projects/');
+
+    if(isProjectDetail){
+      const proj = PROJECTS.find(p => p.id === current.slice('projects/'.length));
+      document.title = proj
+        ? `collin stockmoe - ${proj.title.replace(/&amp;/g, '&').toLowerCase()}`
+        : PAGE_TITLES['projects'];
+    } else {
+      document.title = PAGE_TITLES[current] || PAGE_TITLES[''];
+    }
+
+    if(!current || !(INNER_ROUTES[current] || isProjectDetail)){
+      // HOME: name + description top-left, directory centered
+      document.body.classList.add('is-home');
+      renderHome();
+    } else {
+      // INNER PAGES: mega name + photo + nav (left) / routed content (center) / right column (varies)
+      document.body.classList.remove('is-home');
+      renderLeftInner(current);
+
+      if(isProjectDetail){
+        viewProjectDetail(current.slice('projects/'.length));
+      } else {
+        INNER_ROUTES[current]();
+      }
+
+      if(current === 'about' || isProjectDetail){
+        wrap.classList.add('no-right');
+      } else {
+        wrap.classList.remove('no-right');
+        renderRight(current);
+      }
+
+      center.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
+
+    // mobile Safari can retain a stale (too-tall) document height after
+    // a dynamic DOM update shrinks the page — forcing a reflow here
+    // makes it recalculate immediately instead of leaving blank space
+    // at the bottom until the user interacts with the page again
+    requestAnimationFrame(() => {
+      document.body.style.display = 'none';
+      void document.body.offsetHeight;
+      document.body.style.display = '';
+    });
+  }
+
+  // intercept clicks on internal nav links so navigation happens
+  // instantly via pushState instead of a full page reload
+  document.addEventListener('click', (e) => {
+    if(e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const link = e.target.closest('a[data-route]');
+    if(!link) return;
+    e.preventDefault();
+    const href = routeHref(link.getAttribute('data-route'));
+    if(location.pathname !== href){
+      history.pushState(null, '', href);
+    }
+    route();
+  });
+
+  window.addEventListener('popstate', route);
+  route();
+</script>
+
+</body>
+</html>
